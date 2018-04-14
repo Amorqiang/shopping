@@ -13,14 +13,14 @@
 <body>
  <div class="page-group">
     <div class="page page-current">
-    <!-- 导航条 -->
+    <!-- 导航条 引入-->
       @@include('./common/searchBar.html')
       <div class="content" id="content">
       <!-- 轮播图 -->
         <div class="swiper-container" id="swiperInfo"></div>
         <!-- nav导航栏 -->
         <div class="content-padded menu" id="menuInfo"></div>
-        <!-- 详情页 -->
+        <!-- 菜单列表 -->
         <div id="listInfo">
           <!-- 内容列表模板 -->
          <!--  <div class="content-padded list-title">
@@ -76,7 +76,7 @@
           </div>-->
         </div>
       </div>
-      <!-- 菜单栏 -->
+      <!-- 菜单栏 引入的样式中-->
       @@include('./common/footer.html',{
         "current":"active"
       })
