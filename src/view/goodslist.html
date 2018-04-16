@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Node项目</title>
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <!-- 公共样式 -->
+  @@include('./common/style.html')
+    <!-- 自定义css -->
+  <link rel="stylesheet" type="text/css" href="css/goodslist.css">
+</head>
+<body>
+ <div class="page-group">
+    <div class="page page-current">
+     <!-- 搜索条 -->
+      @@include('./common/searchbar.html')
+      <!-- 菜单栏 -->
+      @@include('./common/footer.html', { "index": "active" })
+      <div class="buttons-tab">
+        <a href="#tab1" class="tab-link active button">综合</a>
+        <a href="#tab2" class="tab-link button">销量</a>
+        <a href="#tab3" class="tab-link button">促销</a>
+      </div>
+      <div class="content pull-to-refresh-content infinite-scroll infinite-scroll-bottom" id="content">
+        <!-- 默认的下拉刷新层 -->
+        <div class="pull-to-refresh-layer">
+          <div class="preloader"></div>
+          <div class="pull-to-refresh-arrow"></div>
+        </div>
+        <div class="list-block media-list">
+          <ul id="listInfo"></ul>
+        </div>
+        <!-- 加载提示符 -->
+        <div class="infinite-scroll-preloader">
+          <div class="preloader"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 将script标签中的文件引入 -->
+  @@include('./common/script.html')
+  <script type="text/template" id="listTpl">
+    {{each $data.goods}}
+      <li>
+        <a href="/goodsdetail.html?goods_id={{$value.goods_id}}" class="item-link item-content close-popup">
+          <div class="item-media"><img src="{{$value.goods_big_logo}}" style="width: 4rem;"></div>
+          <div class="item-inner">
+            <div class="item-title-row">
+              <div class="item-text">{{$value.goods_name}}</div>
+            </div>
+            <div class="item-text" style="color:red">¥{{$value.goods_price}}</div>
+          </div>
+        </a>
+      </li>
+    {{/each}}
+  </script>
+ 
+  <script type="text/javascript" src="js/goodslist.js"></script>
+</body>
+</html>

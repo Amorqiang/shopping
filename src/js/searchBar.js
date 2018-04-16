@@ -81,7 +81,7 @@ $(function(){
   function renderData(params){
     return new  Promise(function(resolve,reject){
       // 使用模板引擎的方式将数据渲染到页面中
-      console.log(params);
+      // console.log(params);
       let html = template('searchTpl',params.data)
       $('.search').html(html);
       resolve(params);
@@ -94,7 +94,63 @@ $(function(){
         goods_id:id
       }
     })
+     /* .then(function(response){
+        console.log(response);
+      })*/
   }
+
+// 把本地存储到本地存储里面，挂载到全局的window对象上
+  window.showDetail = function(id,name){
+    /*
+      业务需求，当点击对应的消息的时候把相应的数据存储到localStroage.然后当在此点击获取焦点的时候的把对应的数据渲染到页面中。
+      存储的时候如果以前已经记录了，跟局逻辑判断就不在存储了
+      存储第一条的时候设置成数组，然后往里面添加的时候直接填加。否则会覆盖
+      定义一个开关，往里面添加数据的时候进行判断。是否是真的存储到里面景区
+  
+    */
+    console.log(id,name)
+    let flag = false;
+    let history = localStorage.getItem('searchInfo');
+    if (history) {
+      // 将数据转换成对象，然后根据里面的属性判断是否是跟以前的相似
+      let historyInfo = JSON.parse(history);
+      // 根据id值搜索在拉取到的消息里面是否有相应的id，id是唯一表示
+      historyInfo.some(function(item,index){
+        if (id === item.goods_id) {
+          flag = true;
+          return true;//封装some底层的时候实现的原理，相当于arr.sort(function(a,b){return a-b;})
+        }
+      })
+      // 如果找到了对应的id则说明该值已经存储过了，则不用再存储。如果是false的话就说明没有则继续存储
+      if (!flag) {
+        let info = {
+          goods_id:id,
+          goods_name:name
+        }
+        historyInfo.push(info);
+        localStorage.setItem('searchInfo',JSON.stringify(historyInfo))
+      }
+
+    } else {
+      // 如果没有history则说明是第一次添加，过去相应的值将数据存储到里面
+      let info = {
+        goods_id:id,
+        goods_name:name
+      }
+      // 定义一个空数组，把相应的值添加进去方便后面继续添加
+      let arr = [];
+      arr.push(info);
+      // 转换数据格式
+      info = JSON.stringify(arr);
+      // 将数据添加到localStorage中
+      // 首次添加进到localStorage中
+      localStorage.setItem('searchInfo',info);
+    }
+    // 让页面在实现的过程中实现跳转
+    location.href = '/goods-detail.html?goods_id=' + id;
+    return false;
+  }
+
 
   // 4.点击遮挡曾中显示的内容的时候让相应的值保存在localStorage中，下次触发focus事件的时候也让内容显示。然后输入的时侯。消息被置空
   // 注意这里的data是个对象，是goods_id和goods_name
@@ -116,7 +172,7 @@ $(function(){
   function loadStorageInfo(){
     return new Promise(function(resolve,reject){
 
-      var result = localStorage.getItem('searchInfo');
+      var result = localStorage.getItem('searchInfo') || '[]';
       console.log(result);
       var list = JSON.parse(result);
       console.log(list);
@@ -134,13 +190,24 @@ $(function(){
     // 待会处理完成以后，也要把对应的历史搜索记录显示出来
     layer.show();
     //console.log('focus');
-    loadStorageInfo()
+    /*loadStorageInfo()
       .then(function(response){
         console.log(response)
       })
       .catch(function(err){
         console.log(err)
-      })
+      })*/
+      // 当获取焦点的时候把相应的值取出来，渲染到页面中
+      let historyInfo = localStorage.getItem('searchInfo') || '[]';
+      if (historyInfo) {
+        historyInfo = JSON.parse(historyInfo);
+        // 进行页面的渲染
+        let html = template('searchTpl',historyInfo);
+        $('.search').html(html);
+      }
+
+
+
   })
   $('#search').on('blur',function(){
     // 失去焦点以后让对应的遮挡曾隐藏掉,考虑到同步与异步的任务的不同。让其在点击玩事件后异步执行，隐藏掉遮挡曾
@@ -164,7 +231,7 @@ $(function(){
       // 根据id值获取信息
       //.then(getData)
       // 查询信息记录localStorage
-      .then(loadInLocalStorage)
+      //.then(loadInLocalStorage)
       // 捕获异常
       .catch(function(err){
         console.log(err);
@@ -201,9 +268,11 @@ $(function(){
               goods_id:key,
               value:value
             }
+            var arr = [];
+            arr.push(info);
             // 将数值转换成json字符串
-            var item = JSON.stringify(info);
-            console.log(item)
+            var item = JSON.stringify(arr);
+            console.log(item);
             // 将值存储到localStorage中
             localStorage.setItem('searchInfo',item)
 
